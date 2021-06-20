@@ -1,5 +1,5 @@
-window.onbeforeunload = function (e) {
+window.onbeforeunload = () => {
   chrome.runtime.sendMessage({
     info: 'closeTab',
   });
-}
+};

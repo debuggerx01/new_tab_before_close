@@ -1,17 +1,19 @@
-chrome.runtime.onStartup.addListener(async () => {
-  let isLast = false;
-  chrome.tabs.onRemoved.addListener(() => {
-    chrome.tabs.query({}, function (tabs) {
-      isLast = tabs.length === 1;
-      console.dir(tabs);
+chrome.tabs.onRemoved.addListener(async () => {
+  chrome.tabs.query({}, async (tabs) => {
+    chrome.storage.local.set({isLast: tabs.length === 1});
+  });
+});
+
+console.info('init');
+
+chrome.runtime.onMessage.addListener(async (msg) => {
+  console.info('on');
+  if (msg.info === 'closeTab') {
+    console.info('do');
+    chrome.storage.local.get(['isLast'], async (result) => {
+      if (result.isLast) {
+        chrome.tabs.create({ url: 'chrome://newtab' });
+      }
     });
-  });
-  console.info('init');
-  chrome.runtime.onMessage.addListener((msg, sender, sendResp) => {
-    console.info('on');
-    if (msg.info === 'closeTab' && isLast) {
-      chrome.tabs.create({ url: 'chrome://newtab' });
-      console.info('do');
-    }
-  });
+  }
 });
