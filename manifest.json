@@ -1,0 +1,21 @@
+{
+  "name": "NewTabBeforeClose",
+  "version": "1.0",
+  "author": "DebuggerX",
+  "description": "当关闭最后一个Tab时打开一个新标签页而不是关闭浏览器",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content_script.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  }
+}
