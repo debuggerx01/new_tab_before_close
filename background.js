@@ -1,19 +1,25 @@
-chrome.tabs.onRemoved.addListener(async () => {
-  chrome.tabs.query({}, async (tabs) => {
-    chrome.storage.local.set({isLast: tabs.length === 1});
+[chrome.tabs.onRemoved, chrome.tabs.onCreated, chrome.tabs.onUpdated].forEach((evt) => {
+  evt.addListener(() => {
+    setTimeout(async () => {
+      const tabs = await chrome.tabs.query({});
+      let normalTabCount = 0;
+      let chromeTabCount = 0;
+      tabs.forEach(t => {
+        if (t.url.startsWith('chrome')) {
+          chromeTabCount++;
+        } else {
+          normalTabCount++;
+        }
+      });
+
+      if (normalTabCount === 1 && chromeTabCount === 0) {
+        chrome.tabs.create({ pinned: true, index: 0, active: false });
+      } else if (normalTabCount === 0 && chromeTabCount === 1 && tabs[0].pinned) {
+        chrome.tabs.create({ pinned: false, index: 1 });
+      } else if (tabs[0].pinned && (normalTabCount > 1 || (normalTabCount === 0 && tabs[1].url.startsWith('chrome://')))) {
+        chrome.tabs.remove(tabs[0].id);
+      }
+    }, 100);
   });
 });
 
-console.info('init');
-
-chrome.runtime.onMessage.addListener(async (msg) => {
-  console.info('on');
-  if (msg.info === 'closeTab') {
-    console.info('do');
-    chrome.storage.local.get(['isLast'], async (result) => {
-      if (result.isLast) {
-        chrome.tabs.create({ url: 'chrome://newtab' });
-      }
-    });
-  }
-});
