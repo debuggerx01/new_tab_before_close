@@ -20,7 +20,7 @@ const handleTabsChange = async () => {
   if (tabs) {
     if (justDragged) {
       justDragged = false;
-      return debounce(handleTabsChange, 300)();
+      return debounce(handleTabsChange, 200)();
     }
   } else return;
   justDragged = false;
@@ -61,8 +61,9 @@ const handleTabsChange = async () => {
   });
 }
 
+let timer = null;
+
 function debounce(fn, delay) {
-  let timer = null;
   return (...args) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
