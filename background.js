@@ -5,7 +5,7 @@
       let normalTabCount = 0;
       let chromeTabCount = 0;
       tabs.forEach(t => {
-        if (t.url.startsWith('chrome')) {
+        if (t.url.startsWith('chrome://')) {
           chromeTabCount++;
         } else {
           normalTabCount++;
