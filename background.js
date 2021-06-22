@@ -12,7 +12,7 @@ const handleTabsChange = async () => {
     tabs = await chrome.tabs.query({});
   } catch (error) {
     if (error.message.includes('dragging')) {
-      setTimeout(handleTabsChange, 100);
+      debounce(handleTabsChange, 100)();
       justDragged = true;
     }
   }
@@ -20,7 +20,7 @@ const handleTabsChange = async () => {
   if (tabs) {
     if (justDragged) {
       justDragged = false;
-      return setTimeout(handleTabsChange, 200);
+      return debounce(handleTabsChange, 300)();
     }
   } else return;
   justDragged = false;
