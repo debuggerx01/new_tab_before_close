@@ -12,7 +12,7 @@ const handleTabsChange = async () => {
     tabs = await chrome.tabs.query({});
   } catch (error) {
     if (error.message.includes('dragging')) {
-      debounce(handleTabsChange, 100)();
+      debounce(handleTabsChange, 200)();
       justDragged = true;
     }
   }
@@ -79,5 +79,5 @@ function debounce(fn, delay) {
   chrome.windows.onCreated,
   chrome.windows.onRemoved,
 ].forEach((evt) => {
-  evt.addListener(debounce(handleTabsChange, 100));
+  evt.addListener(debounce(handleTabsChange, 200));
 });
