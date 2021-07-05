@@ -26,19 +26,27 @@ const handleTabsChange = async () => {
   justDragged = false;
 
   const tabsCount = [];
-  tabs.forEach(t => {
-    if (!tabsCount[t.windowId]) {
-      tabsCount[t.windowId] = new TabCount();
+  for await (const t of tabs) {
+    if (!(t.windowId in tabsCount)) {
+      const w = await chrome.windows.get(t.windowId);
+      if (w.type === 'normal') {
+        tabsCount[t.windowId] = new TabCount();
+      } else {
+        tabsCount[t.windowId] = null;
+      }
     }
+
+    if (tabsCount[t.windowId] === null) continue;
+
     if (t.url.startsWith('chrome://')) {
       tabsCount[t.windowId].chromeTabCount++;
     } else {
       tabsCount[t.windowId].normalTabCount++;
     }
     tabsCount[t.windowId].tabs[t.index] = t;
-  });
+  }
 
-  tabsCount.forEach(tabCount => {
+  tabsCount.filter(e => e !== null).forEach(tabCount => {
     if (tabCount.normalTabCount === 1 && tabCount.chromeTabCount === 0) {
       chrome.tabs.create({
         pinned: true,
