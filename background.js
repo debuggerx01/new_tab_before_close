@@ -25,7 +25,7 @@ const handleTabsChange = async () => {
   } else return;
   justDragged = false;
 
-  const tabsCount = [];
+  const tabsCount = {};
   for await (const t of tabs) {
     if (!(t.windowId in tabsCount)) {
       const w = await chrome.windows.get(t.windowId);
@@ -46,7 +46,7 @@ const handleTabsChange = async () => {
     tabsCount[t.windowId].tabs[t.index] = t;
   }
 
-  tabsCount.filter(e => e !== null).forEach(tabCount => {
+  Object.values(tabsCount).filter(e => e !== null).forEach(tabCount => {
     if (tabCount.normalTabCount === 1 && tabCount.chromeTabCount === 0) {
       chrome.tabs.create({
         pinned: true,
@@ -84,6 +84,7 @@ function debounce(fn, delay) {
   chrome.tabs.onRemoved,
   chrome.tabs.onCreated,
   chrome.tabs.onUpdated,
+  chrome.tabs.onReplaced,
   chrome.windows.onCreated,
   chrome.windows.onRemoved,
 ].forEach((evt) => {
